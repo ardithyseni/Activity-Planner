@@ -26,3 +26,20 @@ export const fetchActivities = () => {
 
 
 }
+
+export const fetchCategories = () => {
+    return {
+        
+        '1546969049': { text: "books" },
+        '1546969225': { text: "movies" },
+    }
+}
+
+export const fetchUser = () => {
+    return {
+        
+        name: "Ardit Hyseni",
+        id: "ah49393",
+          
+    }
+}

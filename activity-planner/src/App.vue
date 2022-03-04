@@ -3,7 +3,7 @@
     <nav class="navbar is-white topNav">
       <div class="container">
         <div class="navbar-brand">
-          <h1>Activity Planner</h1>
+          <h1>{{ fullAppName }}</h1>
         </div>
       </div>
     </nav>
@@ -12,11 +12,14 @@
         <div class="navbar-menu">
           <div class="navbar-start">
             <a class="navbar-item is-active" 
-            href="#">Newest</a>
+               href="#"
+            >Newest</a>
             <a class="navbar-item" 
-            href="#">In Progress</a>
+               href="#"
+            >In Progress</a>
             <a class="navbar-item" 
-            href="#">Finished</a>
+               href="#"
+            >Finished</a>
           </div>
         </div>
       </div>
@@ -26,12 +29,11 @@
       <div class="columns">
         <div class="column is-3">
           <a
-            class="button is-primary is-block is-alt is-large"
             v-if="!isFormDisplayed"
+            class="button is-primary is-block is-alt is-large"
             href="#"
             @click="displayNewActivityForm()"
-            >New Activity</a
-          >
+          >New Activity</a>
 
           <div v-if="isFormDisplayed" class="create-form">
             <h2>Create Activity</h2>
@@ -44,7 +46,7 @@
                     class="input"
                     type="text"
                     placeholder="Set an activity"
-                  />
+                  >
                 </div>
               </div>
               <div class="field">
@@ -54,13 +56,17 @@
                     v-model="newActivity.notes"
                     class="textarea"
                     placeholder="Write some notes here"
-                  ></textarea>
+                  />
                 </div>
               </div>
 
               <div class="field is-grouped">
                 <div class="control">
-                  <button @click="createActivity()" class="button is-link">
+                  <button 
+                    class = "button is-link" 
+                    :disabled = "isFormValid"
+                    @click = "createActivity()"
+                  >
                     Create Activity
                   </button>
                 </div>
@@ -81,10 +87,9 @@
           <div class="box content">
             <ActivityItem 
               v-for="activity in activities"
-              v-bind:activity="activity"
-              v-bind:key="activity.id">
-            
-            </ActivityItem> 
+              :key="activity.id"
+              :activity="activity"
+            /> 
           </div>
         </div>
       </div>
@@ -96,7 +101,8 @@
 
 import ActivityItem from '@/components/ActivityItem.vue'
 
-import {fetchActivities} from '@/api/index'
+import {fetchActivities, fetchUser, fetchCategories} from '@/api/index'
+
 
 export default {
 
@@ -107,9 +113,8 @@ export default {
   data() {
     return {
       isFormDisplayed: false,
-      message: "Hello Vue",
-      titleMessage: "Title Message Vue!!",
-      isTextDisplayed: true,
+      creator: 'Ardit Hyseni',
+      appName: 'Activity Planner',
       newActivity: {
         title: "",
         notes: "",
@@ -122,131 +127,140 @@ export default {
           name: "Tidra",
         },
       },
-      user: {
-        name: "Ardit Hyseni",
-        id: "ah49393",
-      },
+      user: {},
       activities: {},
-      categories: {
-        1546969049: { text: "books" },
-        1546969225: { text: "movies" },
-      },
+      categories: {},
     };
   },
-  beforeCreate () {
-    console.log('beforeCreate called')
+  computed: {
+    isFormValid () { 
+      return this.newActivity.title && this.newActivity.notes
+    },
+    fullAppName () {
+      return this.appName + ' by ' + this.creator;
+    }
   },
+  // beforeCreate () {
+  //   console.log('beforeCreate called')
+  // },
   created () {
     this.activities = fetchActivities()
+    this.user = fetchUser()
+    this.categories = fetchCategories()
+
   },
-  beforeMount () {
-    console.log('beforeMount called')
-  },
-  mounted () {
-    console.log('mounted called')
-  },
-  beforeUpdate () {
-    console.log('beforeUpdate called')
-  },
-  updated () {
-    console.log('updated called')
-  },
-  beforeDestroy () {
-    console.log('beforeDestroy called')
-  },
-  destroyed () {
-    console.log('destroyed called')
-  },
+  // beforeMount () {
+  //   console.log('beforeMount called')
+  // },
+  // mounted () {
+  //   console.log('mounted called')
+  // },
+  // beforeUpdate () {
+  //   console.log('beforeUpdate called')
+  // },
+  // updated () {
+  //   console.log('updated called')
+  // },
+  // beforeDestroy () {
+  //   console.log('beforeDestroy called')
+  // },
+  // destroyed () {
+  //   console.log('destroyed called')
+  // },
+
+  
+
   methods: {
-    toggleTextDisplay() {
-      this.isTextDisplayed = !this.isTextDisplayed;
-    },
+    
     displayNewActivityForm() {
       this.isFormDisplayed = !this.isFormDisplayed;
     },
     createActivity() {
       console.log(this.newActivity);
     },
+    // isFormValid (){ 
+    //   return this.newActivity.title && this.newActivity.notes
+    // }
   },
 };
 </script>
 
 <style>
-#activityApp {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
+  #activityApp {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+  }
 
-html,
-body {
-  font-family: "Open Sans", serif;
-  background: #f2f6fa;
-}
-footer {
-  background-color: #f2f6fa !important;
-}
+  html,
+  body {
+    font-family: "Open Sans", serif;
+    background: #f2f6fa;
+  }
+  footer {
+    background-color: #f2f6fa !important;
+  }
 
-.example-wrapper {
-  margin-left: 30px;
-}
+  .example-wrapper {
+    margin-left: 30px;
+  }
 
-.topNav {
-  border-top: 5px solid #3498db;
-}
-.topNav .container {
-  border-bottom: 1px solid #e6eaee;
-}
-.container .columns {
-  margin: 3rem 0;
-}
-.navbar-menu .navbar-item {
-  padding: 0 2rem;
-}
-aside.menu {
-  padding-top: 3rem;
-}
-aside.menu .menu-list {
-  line-height: 1.5;
-}
-aside.menu .menu-label {
-  padding-left: 10px;
-  font-weight: 700;
-}
-.button.is-primary.is-alt {
-  background: #00c6ff;
-  background: -webkit-linear-gradient(to bottom, #0072ff, #00c6ff);
-  background: linear-gradient(to bottom, #0072ff, #00c6ff);
-  font-weight: 700;
-  font-size: 14px;
-  height: 3rem;
-  line-height: 2.8;
-}
-.media-left img {
-  border-radius: 50%;
-}
-.media-content p {
-  font-size: 14px;
-  line-height: 2.3;
-  font-weight: 700;
-  color: #8f99a3;
-}
-article.post {
-  margin: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e6eaee;
-}
-article.post:last-child {
-  padding-bottom: 0;
-  border-bottom: none;
-}
-.menu-list li {
-  padding: 5px;
-}
+  .topNav {
+    border-top: 5px solid #3498db;
+  }
+  .topNav .container {
+    border-bottom: 1px solid #e6eaee;
+  }
+  .container .columns {
+    margin: 3rem 0;
+  }
+  .navbar-menu .navbar-item {
+    padding: 0 2rem;
+  }
+  aside.menu {
+    padding-top: 3rem;
+  }
+  aside.menu .menu-list {
+    line-height: 1.5;
+  }
+  aside.menu .menu-label {
+    padding-left: 10px;
+    font-weight: 700;
+  }
+  .button.is-primary.is-alt {
+    background: #00c6ff;
+    background: -webkit-linear-gradient(to bottom, #0072ff, #00c6ff);
+    background: linear-gradient(to bottom, #0072ff, #00c6ff);
+    font-weight: 700;
+    font-size: 14px;
+    height: 3rem;
+    line-height: 2.8;
+  }
+  .media-left img {
+    border-radius: 50%;
+  }
+  .media-content p {
+    font-size: 14px;
+    line-height: 2.3;
+    font-weight: 700;
+    color: #8f99a3;
+  }
+  article.post {
+    margin: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e6eaee;
+  }
+  article.post:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  .menu-list li {
+    padding: 5px;
+  }
 
-.navbar-brand > h1 {
-  font-size: 31px;
-  padding: 20px;
-}
+  .navbar-brand > h1 {
+    font-size: 31px;
+    padding: 20px;
+  }
 </style>
