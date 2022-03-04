@@ -11,9 +11,12 @@
       <div class="container">
         <div class="navbar-menu">
           <div class="navbar-start">
-            <a class="navbar-item is-active" href="#">Newest</a>
-            <a class="navbar-item" href="#">In Progress</a>
-            <a class="navbar-item" href="#">Finished</a>
+            <a class="navbar-item is-active" 
+            href="#">Newest</a>
+            <a class="navbar-item" 
+            href="#">In Progress</a>
+            <a class="navbar-item" 
+            href="#">Finished</a>
           </div>
         </div>
       </div>
@@ -81,7 +84,7 @@
               v-bind:activity="activity"
               v-bind:key="activity.id">
             
-              </ActivityItem> 
+            </ActivityItem> 
           </div>
         </div>
       </div>
@@ -91,7 +94,9 @@
 
 <script>
 
-import ActivityItem from './components/ActivityItem.vue'
+import ActivityItem from '@/components/ActivityItem.vue'
+
+import {fetchActivities} from '@/api/index'
 
 export default {
 
@@ -121,31 +126,36 @@ export default {
         name: "Ardit Hyseni",
         id: "ah49393",
       },
-      activities: {
-        1546968934: {
-          id: "1546968934",
-          title: "Learn Vue.js",
-          notes: "I started today",
-          progess: 0,
-          category: "1546969049",
-          createdAt: 1546969144391,
-          updatedAt: 1546969144391,
-        },
-        1546969212: {
-          id: "1546969212",
-          title: "Read Witcher Books",
-          notes: "Good books",
-          progress: 0,
-          category: "1546969049",
-          createdAt: 1546969144391,
-          updatedAt: 1546969144391,
-        },
-      },
+      activities: {},
       categories: {
         1546969049: { text: "books" },
         1546969225: { text: "movies" },
       },
     };
+  },
+  beforeCreate () {
+    console.log('beforeCreate called')
+  },
+  created () {
+    this.activities = fetchActivities()
+  },
+  beforeMount () {
+    console.log('beforeMount called')
+  },
+  mounted () {
+    console.log('mounted called')
+  },
+  beforeUpdate () {
+    console.log('beforeUpdate called')
+  },
+  updated () {
+    console.log('updated called')
+  },
+  beforeDestroy () {
+    console.log('beforeDestroy called')
+  },
+  destroyed () {
+    console.log('destroyed called')
   },
   methods: {
     toggleTextDisplay() {
