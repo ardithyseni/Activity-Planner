@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Forum - Free Bulma template</title>
+    <title>Activity Manager</title>
     <!-- <link rel="shortcut icon" href="./images/favicon.png" type="image/x-icon"> -->
     <link
       rel="stylesheet"
@@ -44,7 +44,9 @@
       <section class="container">
         <div class="columns">
           <div class="column is-3">
-            <a class="button is-primary is-block is-alt is-large" href="#"
+            <a class="button is-primary is-block is-alt is-large" 
+              v-if="!isFormDisplayed"
+              href="#"
               @click="displayNewActivityForm()">New Activity</a>
 
             <div v-if="isFormDisplayed" class="create-form">
@@ -57,67 +59,49 @@
                       v-model="newActivity.title"
                       class="input"
                       type="text"
-                      placeholder="Read a book"
+                      placeholder="Set an activity"
                     />
                   </div>
                 </div>
+                <div class="field">
+                  <label class="label">Notes</label>
+                  <div class="control">
+                    <textarea v-model="newActivity.notes" 
+                    class="textarea" 
+                    placeholder="Write some notes here"></textarea>
+                  </div>
+                </div>
+
                 <div class="field is-grouped">
                   <div class="control">
-                    <button class="button is-link">Create Activity</button>
+                    <button @click="createActivity()" class="button is-link">Create Activity</button>
+                  </div>
+                  <div class="control">
+                    <button class="button is-text"
+                      @click="displayNewActivityForm()">Cancel</button>
                   </div>
                 </div>
               </form>
             </div>
           </div>
+
           <div class="column is-9">
             <div class="box content">
-              <article class="post" v-for="activity in activities">
-                <h4>{{activity.title}}</h4>
-                <div class="media">
-                  <div class="media-left">
-                    <p class="image is-32x32">
-                      <img src="./images/user.png" />
-                    </p>
-                  </div>
-                  <div class="media-content">
-                    <div class="content">
-                      <p>
-                        <a href="#">Ardit Hyseni</a> updated {{activity.updatedAt}}
-                        minutes ago &nbsp;
-                      </p>
-                    </div>
-                  </div>
-                  <div class="media-right">
-                    <span>Progress Bar</span>
-                  </div>
-                </div>
-              </article>
-              <!-- <article class="post">
-                  <h4>Learn Vue.js</h4>
-                  <div class="media">
-                      <div class="media-left">
-                          <p class="image is-32x32">
-                              <img src="./images/user.png" >
-                          </p>
-                      </div>
-                      <div class="media-content">
-                          <div class="content">
-                              <p>
-                                  <a href="#">Ardit Hyseni</a> updated 26 minutes ago &nbsp;
-                              </p>
-                          </div>
-                      </div>
-                      <div class="media-right">
-                          <span>Progress Bar</span>
-                      </div>
-                  </div>
-              </article> -->
+              
+              <activity-item 
+              v-for="activity in activities"
+              v-bind:activity="activity"
+              v-bind:key="activity.id">
+            
+              </activity-item>
+              
             </div>
           </div>
         </div>
       </section>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="./components/ActivityItem.js"></script>
     <script>
       var app = new Vue({
         el: "#vueGoalApp",
@@ -128,6 +112,7 @@
           isTextDisplayed: true,
           newActivity: {
             title: '',
+            notes: '',
           },
           items: {
             1: {
@@ -143,6 +128,7 @@
           },
           activities: {
             1546968934: {
+              id: '1546968934',
               title: "Learn Vue.js",
               notes: "I started today",
               progess: 0,
@@ -151,6 +137,7 @@
               updatedAt: 1546969144391,
             },
             1546969212: {
+              id: '1546969212',
               title: "Read Witcher Books",
               notes: "Good books",
               progress: 0,
@@ -169,7 +156,10 @@
             this.isTextDisplayed = !this.isTextDisplayed;
           },
           displayNewActivityForm(){
-            this.isFormDisplayed = true
+            this.isFormDisplayed = !this.isFormDisplayed
+          },
+          createActivity() {
+            console.log(this.newActivity)
           }
         },
       });
