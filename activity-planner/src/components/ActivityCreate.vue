@@ -36,12 +36,15 @@
           </div>
         </div>
         <div class="field">
-          <label class="label">Notes</label>
+          <label class="label">Category</label>
           <div class="control">
             <select v-model="newActivity.category" class="select">
               <option disabled value="">Please Select One</option>
-              <option v-for="category in categories"
-                      :key="category.id">{{ category.text }}</option>
+              <option 
+                v-for="category in categories"
+                :key="category.id"
+              >{{ category.text }}
+              </option>
             </select>
           </div>
         </div>
@@ -50,7 +53,7 @@
             <button
               class="button is-link"
               :disabled="!isFormValid"
-              @click="createActivity"
+              @click.prevent="createActivity"
             >
               Create Activity
             </button>
@@ -58,7 +61,7 @@
           <div class="control">
             <button
               class="button is-text"
-              @click="toggleFormDisplay"
+              @click.prevent="toggleFormDisplay"
             >
               Cancel
             </button>
@@ -70,6 +73,7 @@
 </template>
 
 <script>
+import { createActivityAPI } from '@/api'
   export default {
     props: {
       categories: {
@@ -89,15 +93,28 @@
     },
     computed: {
       isFormValid () {
-        return this.newActivity.title && this.newActivity.notes
+        return this.newActivity.title && this.newActivity.notes && this.newActivity.category
       }
     },
     methods: {
       toggleFormDisplay () {
         this.isFormDisplayed = !this.isFormDisplayed
       },
+      resetActivityForm (){
+        this.newActivity.title = ''
+        this.newActivity.notes = ''
+        this.newActivity.category = ''
+      },
       createActivity () {
-        console.log(this.newActivity)
+        // debugger
+        createActivityAPI({...this.newActivity})
+          .then(activity => {
+            this.resetActivityForm()
+            this.isFormDisplayed = false
+            this.$emit('activityCreated', {...activity})
+            
+          })
+        
       }
     }
   }

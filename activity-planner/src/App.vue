@@ -7,40 +7,47 @@
         </div>
       </div>
     </nav>
-    <nav class="navbar is-white">
-      <div class="container">
-        <div class="navbar-menu">
-          <div class="navbar-start">
-            <a class="navbar-item is-active" href="#">Newest</a>
-            <a class="navbar-item" href="#">In Progress</a>
-            <a class="navbar-item" href="#">Finished</a>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <!-- Activity Navbar -->
+    <TheNavBar />
+    <!-- Activity Navbar end -->
 
     <section class="container">
       <div class="columns">
         <div class="column is-3">
           
           <ActivityCreate
-          :categories="categories"/>
+            :categories="categories" 
+            @activityCreated = "addActivity"
+          />
           
         </div>
 
         <div class="column is-9">
-          <div class="box content">
-            <ActivityItem
-              v-for="activity in activities"
-              :key="activity.id"
-              :activity="activity"
-            />
-            <div class="activity-length">
-              Currently {{ activityLength }} activities
+          <div class="box content" 
+            :class="{fetching: isFetching, 'has-error': error}">
+            <div v-if="error">
+              {{ error }}
             </div>
-            <div class="activity-motivation">
-              {{ activityMotivation }}
+            <div v-else>
+              <div v-if="isFetching">
+                Loading ...
+              </div>
+              <ActivityItem
+                v-for="activity in activities"
+                :key="activity.id"
+                :activity="activity"
+              />
             </div>
+            
+            <div v-if="!isFetching">
+              <div class="activity-length">
+                Currently {{ activityLength }} activities
+              </div>
+              <div class="activity-motivation">
+                {{ activityMotivation }}
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -49,8 +56,10 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import ActivityItem from "@/components/ActivityItem.vue"
 import ActivityCreate from "@/components/ActivityCreate.vue"
+import TheNavBar from "@/components/TheNavBar.vue"
 
 import { fetchActivities, fetchUser, fetchCategories } from "@/api/index";
 
@@ -59,6 +68,7 @@ export default {
   components: {
     ActivityItem,
     ActivityCreate,
+    TheNavBar,
   },
   data() {
     return {
@@ -66,15 +76,8 @@ export default {
       creator: "Ardit Hyseni",
       appName: "Activity Planner",
       watchedAppName: "Activity Planner by Ardit Hyseni",
-      
-      items: {
-        1: {
-          name: "Ardit",
-        },
-        2: {
-          name: "Tidra",
-        },
-      },
+      isFetching: false,
+      error: null,
       user: {},
       activities: {},
       categories: {},
@@ -98,53 +101,30 @@ export default {
       }
     },
   },
-  // watch: {
-  //   creator(val) {
-  //     debugger
-  //     console.log(val)
-  //     this.watchedAppName = this.appName + ' by ' + val;
-  //   },
-  //   appName(val) {
-  //     debugger
-  //     console.log(val)
-  //     this.watchedAppName = val + ' by ' + this.creator
-  //   }
-  // },
-  // beforeCreate () {
-  //   console.log('beforeCreate called')
-  // },
+  
   created() {
-    this.activities = fetchActivities();
+    this.isFetching = true
+    fetchActivities()
+      .then(activities => {
+        this.activities = activities
+        this.isFetching = false
+      })
+      .catch(err => {
+        this.error = err
+        this.isFetching = false
+      })
+
     this.user = fetchUser();
     this.categories = fetchCategories();
   },
-  // beforeMount () {
-  //   console.log('beforeMount called')
-  // },
-  // mounted () {
-  //   console.log('mounted called')
-  // },
-  // beforeUpdate () {
-  //   console.log('beforeUpdate called')
-  // },
-  // updated () {
-  //   console.log('updated called')
-  // },
-  // beforeDestroy () {
-  //   console.log('beforeDestroy called')
-  // },
-  // destroyed () {
-  //   console.log('destroyed called')
-  // },
-
+ 
   methods: {
     
-    createActivity() {
-      console.log(this.newActivity);
+    addActivity(newActivity) {
+      // this.activities[newActivity.id] = newActivity
+      Vue.set(this.activities, newActivity.id, newActivity)
     },
-    // isFormValid (){
-    //   return this.newActivity.title && this.newActivity.notes
-    // }
+    
   },
 };
 </script>
@@ -164,6 +144,14 @@ body {
 }
 footer {
   background-color: #f2f6fa !important;
+}
+
+.fetching {
+  border: 2px solid orange;
+}
+
+.has-error {
+  border: 2px solid red;
 }
 
 .activity-motivation {
