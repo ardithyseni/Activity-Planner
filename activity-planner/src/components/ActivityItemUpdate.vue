@@ -69,6 +69,7 @@
 </template>
 
 <script>
+  import store from '@/store'
   import textUtility from '@/mixins/textUtility'
   export default {
     mixins: [textUtility],
@@ -90,7 +91,10 @@
     },
     methods: {
       updateActivity () {
-        console.log(this.activity)
+        store.updateActivity(this.activityToUpdate)
+            .then(() => {
+                this.$emit('toggleUpdate', false)
+            })
       }
     }
   }

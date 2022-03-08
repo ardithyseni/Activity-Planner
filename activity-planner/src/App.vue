@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isDataLoaded" id="activityApp">
+  <div id="activityApp">
     <nav class="navbar is-white topNav">
       <div class="container">
         <div class="navbar-brand">
@@ -32,13 +32,14 @@
               <div v-if="isFetching">
                 Loading ...
               </div>
-              <ActivityItem
-                v-for="activity in activities"
-                :key="activity.id"
-                :activity="activity"
-                :categories="categories"
-
-              />
+              <div v-if="isDataLoaded" >
+                <ActivityItem
+                  v-for="activity in activities"
+                  :key="activity.id"
+                  :activity="activity"
+                  :categories="categories"
+                />
+              </div>
             </div>
             
             <div v-if="!isFetching">
@@ -65,6 +66,7 @@ import ActivityCreate from "@/components/ActivityCreate.vue"
 import TheNavBar from "@/components/TheNavBar.vue"
 
 // import { fetchActivities, fetchUser, fetchCategories, deleteActivityAPI } from "@/api/index";
+import fakeApi from '@/lib/fakeApi'
 
 export default {
   name: "App",
@@ -118,6 +120,9 @@ export default {
   },
   
   created() {
+    // Only run once to populate the browser's local storage 
+    // fakeApi.fillDB()
+
     this.isFetching = true
     store.fetchActivities()
       .then(activities => {

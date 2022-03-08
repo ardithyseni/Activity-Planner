@@ -50,14 +50,26 @@ const store = {
     },
 
     createActivity (activity) {
-        activity.id = this.generateUid();
+        activity.id = this.generateUid()
         activity.progress = 0;
-        activity.createdAt = new Date();
-        activity.updatedAt = new Date();
+        activity.createdAt = new Date()
+        activity.updatedAt = new Date()
 
         return fakeApi.post("activities", activity)
             .then(createdActivity => {
                 this.setItem('activities', createdActivity.id, createdActivity)
+                return createdActivity
+            })
+    },
+
+    updateActivity (activity) {
+
+        activity.updatedAt = new Date()
+
+        return fakeApi.post("activities", activity)
+            .then(updatedActivity => {
+                this.setItem('activities', updatedActivity.id, updatedActivity)
+                return updatedActivity
             })
     },
 
