@@ -8,40 +8,35 @@
       </div>
     </nav>
     <!-- Activity Navbar -->
-    <TheNavBar />
+    <TheNavBar @filterSelected="setFilter" />
     <!-- Activity Navbar end -->
 
     <section class="container">
       <div class="columns">
         <div class="column is-3">
-          
-          <ActivityCreate
-            :categories="categories" 
-            
-          />
-          
+          <ActivityCreate :categories="categories" />
         </div>
 
         <div class="column is-9">
-          <div class="box content" 
-            :class="{fetching: isFetching, 'has-error': error}">
+          <div
+            class="box content"
+            :class="{ fetching: isFetching, 'has-error': error }"
+          >
             <div v-if="error">
               {{ error }}
             </div>
             <div v-else>
-              <div v-if="isFetching">
-                Loading ...
-              </div>
-              <div v-if="isDataLoaded" >
+              <div v-if="isFetching">Loading ...</div>
+              <div v-if="isDataLoaded">
                 <ActivityItem
-                  v-for="activity in activities"
+                  v-for="activity in filteredActivities"
                   :key="activity.id"
                   :activity="activity"
                   :categories="categories"
                 />
               </div>
             </div>
-            
+
             <div v-if="!isFetching">
               <div class="activity-length">
                 Currently {{ activityLength }} activities
@@ -50,7 +45,6 @@
                 {{ activityMotivation }}
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -59,14 +53,14 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import store from './store'
-import ActivityItem from "@/components/ActivityItem.vue"
-import ActivityCreate from "@/components/ActivityCreate.vue"
-import TheNavBar from "@/components/TheNavBar.vue"
+import Vue from "vue";
+import store from "./store";
+import ActivityItem from "@/components/ActivityItem.vue";
+import ActivityCreate from "@/components/ActivityCreate.vue";
+import TheNavBar from "@/components/TheNavBar.vue";
 
 // import { fetchActivities, fetchUser, fetchCategories, deleteActivityAPI } from "@/api/index";
-import fakeApi from '@/lib/fakeApi'
+import fakeApi from "@/lib/fakeApi";
 
 export default {
   name: "App",
@@ -76,9 +70,10 @@ export default {
     TheNavBar,
   },
   data() {
-    const { state: {activities, categories} } = store
+    const {
+      state: { activities, categories },
+    } = store;
     return {
-      
       creator: "Ardit Hyseni",
       appName: "Activity Planner",
       watchedAppName: "Activity Planner by Ardit Hyseni",
@@ -87,10 +82,27 @@ export default {
       user: {},
       activities,
       categories,
+      filter: "all",
     };
   },
   computed: {
-    
+    filteredActivities() {
+      let condition;
+      if (this.filter === "all") {
+        return this.activities;
+      }
+      if (this.filter === "inprogress") {
+        condition = (value) => value > 0 && value < 100;
+      } else if (this.filter === "finished") {
+        condition = (value) => value === 100;
+      } else {
+        condition = (value) => value === 0;
+      }
+      return Object.values(this.activities).filter((activity) =>
+        condition(activity.progress)
+      );
+    },
+
     fullAppName() {
       return this.appName + " by " + this.creator;
     },
@@ -108,40 +120,40 @@ export default {
     },
 
     activitiesLength() {
-      return Object.keys(this.activities).length
+      return Object.keys(this.activities).length;
     },
     categoriesLength() {
-      return Object.keys(this.categories).length
+      return Object.keys(this.categories).length;
     },
 
     isDataLoaded() {
-      return this.activitiesLength && this.categoriesLength
-    }
+      return this.activitiesLength && this.categoriesLength;
+    },
   },
-  
+
   created() {
-    // Only run once to populate the browser's local storage 
+    // Only run once to populate the browser's local storage
     // fakeApi.fillDB()
 
-    this.isFetching = true
-    store.fetchActivities()
-      .then(activities => {
-        this.isFetching = false
+    this.isFetching = true;
+    store
+      .fetchActivities()
+      .then((activities) => {
+        this.isFetching = false;
       })
-      .catch(err => {
-        this.error = err
-        this.isFetching = false
-      })
+      .catch((err) => {
+        this.error = err;
+        this.isFetching = false;
+      });
 
     this.user = store.fetchUser();
-    store.fetchCategories()
-      .then(categories => {
-              
-      })
+    store.fetchCategories().then((categories) => {});
   },
- 
+
   methods: {
-    
+    setFilter(filterOption) {
+      this.filter = filterOption;
+    },
   },
 };
 </script>

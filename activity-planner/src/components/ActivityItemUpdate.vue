@@ -48,7 +48,7 @@
         <!-- TODO: Add v-model here -->
         <input
           id="progress"
-          v-model="activityToUpdate.progress"
+          v-model.number="activityToUpdate.progress"
           type="range"
           name="progress"
           min="0"
